@@ -24,11 +24,20 @@ CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
 
 /* ── Root & page ── */
-body, .gradio-container {
+html, body, .gradio-container, .main, .wrap, .app, .contain, .svelte-1kyws56 {
     background: #F0EDE6 !important;
     font-family: 'DM Sans', sans-serif !important;
+    box-shadow: none !important;
+    border: none !important;
 }
-.gradio-container { max-width: 1100px !important; margin: 0 auto !important; padding: 0 2rem !important; }
+.gradio-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 6vw !important;
+    box-shadow: none !important;
+    border: none !important;
+}
 
 /* ── Hide default gradio header chrome ── */
 footer { display: none !important; }
@@ -36,9 +45,9 @@ footer { display: none !important; }
 
 /* ── Hero header ── */
 #smartlens-header {
-    padding: 3.5rem 0 1.5rem;
+    padding: 4.5rem 0 2rem;
     border-bottom: 1.5px solid #C8C3B8;
-    margin-bottom: 2.5rem;
+    margin-bottom: 3.5rem;
 }
 #smartlens-header p { margin: 0; }
 #smartlens-header .eyebrow {
@@ -92,6 +101,7 @@ footer { display: none !important; }
 }
 
 /* ── Caption cards (textboxes) ── */
+.caption-card { margin-bottom: 1rem !important; }
 .caption-card textarea,
 .caption-card input {
     background: #FFFFFF !important;
@@ -181,7 +191,7 @@ footer { display: none !important; }
 }
 
 /* ── Two-column layout refinement ── */
-.main-row { gap: 2.5rem !important; align-items: flex-start !important; }
+.main-row { gap: 4rem !important; align-items: flex-start !important; }
 """
 
 with gr.Blocks(title="SmartLens", css=CSS) as demo:
