@@ -37,20 +37,30 @@ def generate_captions(image: Image.Image, num_captions: int = 3) -> list[str]:
         greedy_ids = model.generate(**inputs, max_new_tokens=50)
     captions.append(processor.decode(greedy_ids[0], skip_special_tokens=True))
 
-    # Caption 2 & 3: Diverse beam search
+    # Caption 2: Beam search (most probable sequence)
     with torch.no_grad():
         beam_ids = model.generate(
             **inputs,
             num_beams=5,
-            num_return_sequences=2,
+            num_return_sequences=1,
             max_new_tokens=60,
-            diversity_penalty=1.0,
-            num_beam_groups=2,
         )
-    for beam_id in beam_ids:
-        cap = processor.decode(beam_id, skip_special_tokens=True)
-        if cap not in captions:
-            captions.append(cap)
+    cap = processor.decode(beam_ids[0], skip_special_tokens=True)
+    if cap not in captions:
+        captions.append(cap)
+
+    # Caption 3: Sampling with temperature for variety
+    with torch.no_grad():
+        sample_ids = model.generate(
+            **inputs,
+            do_sample=True,
+            top_p=0.9,
+            temperature=1.2,
+            max_new_tokens=60,
+        )
+    cap = processor.decode(sample_ids[0], skip_special_tokens=True)
+    if cap not in captions:
+        captions.append(cap)
 
     return captions[:num_captions]
 
