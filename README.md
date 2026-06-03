@@ -14,11 +14,49 @@
 | Feature | Description |
 |---|---|
 | 🧠 **BLIP Model** | State-of-the-art vision-language model by Salesforce |
-| 🖼️ **3 Diverse Captions** | Greedy + diverse beam search for varied descriptions |
+| 🖼️ **3 Diverse Captions** | Greedy + beam search + temperature sampling |
 | 🌐 **Hindi Translation** | Translates best caption to Hindi (free, no API) |
 | 📊 **BLEU Evaluation** | Quantitative caption quality scoring |
-| 🎛️ **Gradio Web UI** | Clean, interactive interface — launch with one command |
+| 🎛️ **Gradio Web UI** | Clean, editorial interface — launch with one command |
 | ⚡ **No Dataset Needed** | Fully pretrained — works on any image immediately |
+
+---
+
+## 🖥️ Interface
+
+> Clean editorial UI — upload any image and get 3 captions instantly.
+
+![SmartLens UI](assets/ui_empty.png)
+
+---
+
+## 📸 Demo
+
+### Example 1 — Animated / Illustrated Image
+
+| Input Image | Output |
+|---|---|
+| ![Demo 1 Input](assets/demo1_input.jpg) | ![Demo 1 Captions](assets/demo1_captions.png) |
+
+**Generated captions:**
+- **Best:** `two people sitting on a ledge looking at the city`
+- **Alt 01:** `two people sitting on top of a building looking at the city skyline`
+- **Alt 02:** `person and the spider movie characters`
+- **Hindi:** `दो लोग एक किनारे पर बैठे शहर को देख रहे हैं`
+
+---
+
+### Example 2 — Real Photography
+
+| Input Image | Output |
+|---|---|
+| ![Demo 2 Input](assets/demo2_input.jpg) | ![Demo 2 Captions](assets/demo2_captions.png) |
+
+**Generated captions:**
+- **Best:** `a man standing in the water near a lighthouse`
+- **Alt 01:** `a person standing in the water at sunset`
+- **Alt 02:** `a person stands at a body floating in the water, the sun is low and dark`
+- **Hindi:** `एक आदमी प्रकाशस्तंभ के पास पानी में खड़ा है`
 
 ---
 
@@ -65,11 +103,11 @@ Input Image
 │  (Features → Caption text)  │
 └─────────────┬───────────────┘
               │
-     ┌────────┴─────────┐
-     ▼                  ▼
-Greedy Caption    Diverse Beam Search
-(Best / most      (2 alternative
- confident)        captions)
+     ┌────────┴──────────────┐
+     ▼                       ▼
+Greedy Caption       Beam Search + Sampling
+(Best / most         (2 alternative captions)
+ confident)
      │
      ▼
 Hindi Translation (deep-translator)
@@ -77,17 +115,6 @@ Hindi Translation (deep-translator)
      ▼
 BLEU Score (vs. reference caption)
 ```
-
----
-
-## 📸 Sample Output
-
-**Input:** Photo of a dog playing in a park  
-**Caption 1 (Greedy):** *"a dog playing with a ball in a green park"*  
-**Caption 2 (Beam):** *"a brown dog running on grass with a toy"*  
-**Caption 3 (Beam):** *"a dog enjoying outdoor playtime in a sunny field"*  
-**Hindi:** *"एक कुत्ता हरे पार्क में गेंद के साथ खेल रहा है"*  
-**BLEU-4:** 0.42
 
 ---
 
@@ -99,7 +126,7 @@ SmartLens/
 ├── caption_engine.py         # Core model loading + inference
 ├── SmartLens_Notebook.ipynb  # Full walkthrough notebook
 ├── requirements.txt
-├── samples/                  # Sample images for demo
+├── assets/                   # Screenshots and demo images
 └── README.md
 ```
 
@@ -109,7 +136,7 @@ SmartLens/
 
 **BLIP** (Bootstrapping Language-Image Pre-training) is a vision-language model developed by Salesforce Research. It uses:
 - A **Vision Transformer (ViT)** as the image encoder
-- A **causal language model** as the text decoder  
+- A **causal language model** as the text decoder
 - Pre-trained on 129M image-text pairs from the web
 
 Reference: [BLIP: Bootstrapping Language-Image Pre-training (ICML 2022)](https://arxiv.org/abs/2201.12086)
