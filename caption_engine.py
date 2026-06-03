@@ -1,0 +1,68 @@
+"""
+SmartLens - Caption Engine
+Uses BLIP (Bootstrapping Language-Image Pre-training) from Salesforce via HuggingFace.
+No API key required. Runs 100% locally after first download.
+"""
+
+from PIL import Image
+from transformers import BlipProcessor, BlipForConditionalGeneration
+import torch
+
+# ─── Load model once at startup ───────────────────────────────────────────────
+MODEL_NAME = "Salesforce/blip-image-captioning-base"
+
+print("Loading BLIP model (first run downloads ~1GB, cached after)...")
+processor = BlipProcessor.from_pretrained(MODEL_NAME)
+model = BlipForConditionalGeneration.from_pretrained(MODEL_NAME)
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = model.to(device)
+model.eval()
+print(f"Model loaded on {device} ✓")
+
+
+# ─── Caption generation ────────────────────────────────────────────────────────
+def generate_captions(image: Image.Image, num_captions: int = 3) -> list[str]:
+    """
+    Generate multiple diverse captions for an image using beam search + sampling.
+    Returns a list of caption strings.
+    """
+    image = image.convert("RGB")
+    inputs = processor(image, return_tensors="pt").to(device)
+
+    captions = []
+
+    # Caption 1: Greedy / most confident caption
+    with torch.no_grad():
+        greedy_ids = model.generate(**inputs, max_new_tokens=50)
+    captions.append(processor.decode(greedy_ids[0], skip_special_tokens=True))
+
+    # Caption 2 & 3: Diverse beam search
+    with torch.no_grad():
+        beam_ids = model.generate(
+            **inputs,
+            num_beams=5,
+            num_return_sequences=2,
+            max_new_tokens=60,
+            diversity_penalty=1.0,
+            num_beam_groups=2,
+        )
+    for beam_id in beam_ids:
+        cap = processor.decode(beam_id, skip_special_tokens=True)
+        if cap not in captions:
+            captions.append(cap)
+
+    return captions[:num_captions]
+
+
+def translate_to_hindi(text: str) -> str:
+    """
+    Translate English caption to Hindi using deep_translator (free, no API key).
+    Falls back gracefully if translation fails.
+    """
+    try:
+        from deep_translator import GoogleTranslator
+        translated = GoogleTranslator(source="en", target="hi").translate(text)
+        return translated
+    except Exception as e:
+        return f"(Translation unavailable: {e})"
